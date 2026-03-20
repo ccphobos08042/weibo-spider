@@ -1,0 +1,245 @@
+$def with(hotValue,hotName)
+<!DOCTYPE html>
+<html lang="en" style="font-size: 80px;">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微博热搜数据分析</title>
+  <link rel="stylesheet" href="./static/index.css">
+</head>
+
+<body style="font-size: 12px;">
+  <header>
+    <h1>微博热搜数据分析</h1>
+    <div class="showTime"><span>2023-12-23 15:35:43</span></div>
+  </header>
+  <section class="mainbox">
+    <div class="column">
+      <div class="panel pie">
+        <h2>微博各榜热度分布</h2>
+        <div class="chart" _echarts_instance_="ec_1703316923334" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 438px; height: 318px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="438" height="318" style="position: absolute; left: 0px; top: 0px; width: 438px; height: 318px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+        <div class="panel-footer"></div>
+      </div>
+      <div class="panel bar">
+        <h2>
+          <a href="#" onclick="showDiv('realtimehot')">&nbsp&nbsp总榜&nbsp&nbsp</a>
+          <a href="#" onclick="showDiv('entrank')">&nbsp&nbsp文娱榜&nbsp&nbsp</a>
+          <a href="#" onclick="showDiv('game')">&nbsp&nbsp游戏榜&nbsp&nbsp</a>
+          <a href="#" onclick="showDiv('sport')">&nbsp&nbsp体育榜&nbsp&nbsp</a>
+          
+        </h2>
+        <div class="scrollable-container" id="sport" style="display: none;">
+          $for i in hotName["sport"]:
+            <li class="item"><a href="#" onclick="postData('$i[0]')">$i[0]🔥$i[1]</a></li>
+          </div>
+        <div class="scrollable-container" id="game" style="display: none;" >
+          $for i in hotName["game"]:
+            <li class="item"><a href="#" onclick="postData('$i[0]')">$i[0]🔥$i[1]</a></li>
+          </div>
+        <div class="scrollable-container" id="realtimehot" style="display: block;">
+            $for i in hotName["realtimehot"]:
+              <li class="item"><a href="#" onclick="postData('$i[0]')">$i[0]🔥$i[1]</a></li>
+        </div>
+        <div class="scrollable-container" id="entrank" style="display: none;">
+          $for i in hotName["entrank"]:
+            <li class="item"><a href="#" onclick="postData('$i[0]')">$i[0]🔥$i[1]</a></li>
+        </div>
+  
+      </div>
+    </div>
+    <div class="column">
+      <div class="no">
+        <div class="panel words">
+          <h2 id="title">用户评论</h2>
+          
+          
+          <a class="change" href="#" onclick="changepost()">&nbsp&nbsp原始数据&nbsp&nbsp</a>
+          <a class="change" href="#" onclick="changecloud()">&nbsp&nbsp词云&nbsp&nbsp</a> 
+          <div style="display: none;" class="wordscroll" id="wordscroll"></div>
+          <div id="cloud" class="chart" _echarts_instance_="ec_1703316923336" style="display: block; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"><div style="position: relative; width: 429px; height: 318px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="429" height="318" style="position: absolute; left: 0px; top: 0px; width: 429px; height: 318px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div></div>
+
+          <div class="panel-footer"></div>
+        </div>  
+          <div class="panel-footer"></div>
+        </div>
+      </div>
+      
+
+    </div>
+    <div class="column">
+      
+      <div class="panel">
+        <h2>各榜热度趋势(单位：K)</h2>
+        <div id="main" style="width: 400px; height: 400px;"></div>
+        <h2 >
+          <a href="#" onclick="postline(1)">&nbsp&nbsp1小时&nbsp&nbsp</a>
+          <a href="#" onclick="postline(3)">&nbsp&nbsp3小时&nbsp&nbsp</a>
+          <a href="#" onclick="postline(5)">&nbsp&nbsp5小时&nbsp&nbsp</a>
+          <a href="#" onclick="postline(10)">&nbsp&nbsp10小时&nbsp&nbsp</a>
+        </h2>
+        <div class="panel-footer"></div>
+        
+      </div>
+      <div class="panel bar1">
+        <li>&nbsp;</li>
+        <a href="#" onclick="upload()" class="change">&nbsp&nbspHDFS一键备份&nbsp&nbsp</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="#" onclick="drop()" class="change">&nbsp&nbspHDFS删除备份&nbsp&nbsp</a>
+        <li>&nbsp;</li>
+        <h2 style="font-size: 0.3rem; height: 0.4rem;line-height: 0.4rem;">当前已备份数据</h2>
+        <div id="hdfs" class="scrollable-HDFS"></div>
+        
+        
+
+          
+      </div>
+    </div>
+  </section>
+  <script src="./static/flexible.js"></script>
+  <script src="./static/echarts.min.js"></script>
+  <script src="./static/echarts-words.js"></script>
+  <script  src="./static/index.js"></script>
+  <script >
+    
+(function () {
+  var myChart = echarts.init(document.querySelector(".pie .chart"));
+  var pieData = [
+    { name: '文娱榜', value: $hotValue["entrank"] },
+    { name: '游戏榜', value: $hotValue["game"] },
+    { name: '体育榜', value: $hotValue["sport"] },
+  ]
+  option = {
+    color: [
+      "#A0CE3A",
+      "#31C5C0",
+      "#1E9BD1",
+      "#0F347B",
+      "#585247",
+      "#7F6AAD",
+      "#009D85",
+      "rgba(250,250,250,0.3)",
+    ],
+    legend: {
+      orient: "vertical",
+      top: "middle",
+      right: "3%",
+      textStyle: {
+        color: "#f2f2f2",
+        fontSize: transformFontSize(12),
+      },
+      icon: "roundRect",
+      data: pieData,
+    },
+    tooltip: {
+      show: true,
+      valueFormatter: (value) => value + '个'
+    },
+    series: [
+      // 主要展示层的
+      {
+        radius: ["30%", "65%"],
+        center: ["37%", "50%"],
+        type: "pie",
+        label: {
+          normal: {
+            show: false,
+            formatter: "{c}个",
+            textStyle: {
+              color: "rgba(250,250,250)",
+              fontSize: transformFontSize(12),
+            },
+            position: "outside",
+          },
+          emphasis: {
+            show: false,
+          },
+        },
+        labelLine: {
+          normal: {
+            show: false,
+            length: transformFontSize(5),
+            length2: 0
+          },
+          emphasis: {
+            show: true,
+          },
+        },
+        name: "热度",
+        data: pieData,
+      },
+      // 边框的设置
+      {
+        radius: ["30%", "34%"],
+        center: ["37%", "50%"],
+        type: "pie",
+        label: {
+          normal: {
+            show: false,
+          },
+          emphasis: {
+            show: false,
+          },
+        },
+        labelLine: {
+          normal: {
+            show: false,
+          },
+          emphasis: {
+            show: false,
+          },
+        },
+        animation: false,
+        tooltip: {
+          show: false,
+        },
+        data: [
+          {
+            value: 1,
+            itemStyle: {
+              color: "rgba(250,250,250,0.3)",
+            },
+          },
+        ],
+      },
+      
+    ],
+  };
+  myChart.setOption(option);
+  window.addEventListener("resize", function () {
+    myChart.resize();
+  });
+})();
+
+  </script>
+
+  <script src="./static/china.js"></script>
+  <script src="./static/myMap.js"></script>
+  <script src="./static/jquery.js"></script>
+  <script src="./static/jquery.waypoints.min.js"></script>
+  <script src="./static/jquery.countup.min.js"></script>
+
+  <script type="text/javascript">
+    $('.counter').countUp({
+      delay: 10,
+      time: 1000
+    });
+  </script>
+
+  <script>
+    (function (fn) {
+      fn();
+      setInterval(fn, 1000);
+    })(function () {
+      var dt = new Date();
+      document.querySelector(".showTime span").innerHTML =
+        dt.getFullYear() + "-" +
+        (dt.getMonth() + 1) + "-" +
+        dt.getDate() + " " +
+        dt.getHours() + ":" +
+        dt.getMinutes() + ":" +
+        dt.getSeconds() + "";
+    });
+  </script>
+
+
+</body></html>
