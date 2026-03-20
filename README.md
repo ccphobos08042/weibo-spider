@@ -123,6 +123,3 @@ weibo-spider/
 ### 项目界面展示
 ![项目界面展示](docs/images/item.png)
 
-## 许可证
-
-本项目采用MIT许可证。
